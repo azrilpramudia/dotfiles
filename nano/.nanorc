@@ -1,0 +1,29 @@
+# show number line
+set linenumbers
+
+# line number color
+set numbercolor white
+
+# auto indentification
+set autoindent
+
+#
+set constantshow
+
+#
+set titlecolor white,blue
+
+#
+set statuscolor white,blue
+
+# indicator bar
+set indicator
+
+# tab size
+set tabsize 2
+
+#
+set tabstospaces
+
+#
+set positionlog
