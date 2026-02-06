@@ -10,11 +10,14 @@ set autoindent
 #
 set constantshow
 
-#
-set titlecolor white,blue
+# Title Color
+set titlecolor brightmagenta
 
-#
-set statuscolor white,blue
+# Status Color
+set statuscolor brightmagenta
+
+# Error Color
+set errorcolor brightred
 
 # indicator bar
 set indicator
@@ -22,7 +25,7 @@ set indicator
 # tab size
 set tabsize 2
 
-#
+# Tabs Spaces
 set tabstospaces
 
 #
