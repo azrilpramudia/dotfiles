@@ -14,6 +14,24 @@ from kitty.boss import get_boss
 
 
 # ================= TAB DRAW =================
+def truncate_title(title: str, max_len: int) -> str:
+    if len(title) <= max_len:
+        return title
+    return title[: max_len - 1] + "…"
+
+def format_tab_title(tab: TabBarData) -> str:
+    title = tab.title
+
+    # active tab → show real name truncated
+    if tab.is_active:
+        max_len = 18
+        if len(title) > max_len:
+            return title[: max_len - 3] + "..."
+        return title
+
+    # inactive tab → compact indicator
+    return "..."
+
 def draw_tab(
     draw_data: DrawData,
     screen: Screen,
@@ -25,9 +43,29 @@ def draw_tab(
     extra_data: ExtraData,
 ) -> int:
 
-    draw_tab_with_powerline(
-        draw_data, screen, tab, before, max_title_length, index, is_last, extra_data
-    )
+    # choose colors
+    if tab.is_active:
+        bg = as_rgb(int(draw_data.active_bg))
+        fg = as_rgb(int(draw_data.active_fg))
+    else:
+        bg = as_rgb(int(draw_data.inactive_bg))
+        fg = as_rgb(int(draw_data.inactive_fg))
+
+    # left separator
+    screen.cursor.fg = bg
+    screen.draw("")
+
+    # tab background
+    screen.cursor.bg = bg
+    screen.cursor.fg = fg
+
+    title = format_tab_title(tab)
+    screen.draw(f" {title} ")
+
+    # right separator
+    screen.cursor.fg = bg
+    screen.cursor.bg = 0
+    screen.draw("")
 
     if is_last:
         draw_right_status(draw_data, screen)
@@ -56,7 +94,7 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
     # approximate terminal cell width (nerd icons = 2 cells)
     status_width = len(status_text) + 4
 
-    # ---- ABSOLUTE RIGHT POSITION (REAL FIX) ----
+    # ---- ABSOLUTE RIGHT POSITION ----
     right_edge = screen.columns
 
     start_pos = right_edge - status_width
@@ -70,7 +108,7 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
 
     # left rounded separator
     screen.cursor.fg = tab_bg
-    screen.draw("")
+    screen.draw("")
 
     # draw cells
     screen.cursor.bg = tab_bg
