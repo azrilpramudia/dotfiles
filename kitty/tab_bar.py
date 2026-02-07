@@ -42,11 +42,22 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
     if not cells:
         return
 
+    # --- calculate actual status width (dynamic) ---
+    status_text = ""
+    for c in cells:
+        if isinstance(c, tuple):
+            status_text += c[1]
+        else:
+            status_text += c
+        status_text += " | "
+
+    status_text = status_text[:-3]  # remove last separator
+
+    # approximate terminal cell width (nerd icons = 2 cells)
+    status_width = len(status_text) + 4
+
     # ---- ABSOLUTE RIGHT POSITION (REAL FIX) ----
     right_edge = screen.columns
-
-    # perkiraan lebar status bar (cukup besar supaya tidak ketabrak)
-    status_width = 39
 
     start_pos = right_edge - status_width
     if start_pos < screen.cursor.x:
@@ -80,6 +91,7 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
             screen.cursor.fg = tab_fg
             screen.draw("|")
 
+
 # ================= CELLS =================
 def create_cells():
     cells = []
@@ -97,7 +109,6 @@ def create_cells():
     cells.append(now.strftime("%H:%M"))
 
     return cells
-
 
 # ================= BATTERY =================
 def get_battery():
@@ -125,24 +136,31 @@ def get_battery():
     except Exception:
         return None
 
-
 # ================= GIT BRANCH =================
 def get_git_branch():
     try:
         boss = get_boss()
         window = boss.active_window
         if not window:
-            return None
+            return " ~"
 
         # get real shell pid
         pid = window.child.pid
 
-        # read working directory from /proc
+        # real working directory of shell
         cwd = subprocess.getoutput(f"readlink -f /proc/{pid}/cwd")
-
         if not cwd:
-            return None
+            return " ~"
 
+        # check if folder is a git repo
+        is_repo = subprocess.getoutput(
+            f"git -C '{cwd}' rev-parse --is-inside-work-tree 2>/dev/null"
+        )
+
+        if is_repo.strip() != "true":
+            return " ~"
+
+        # get branch name
         branch = subprocess.getoutput(
             f"git -C '{cwd}' rev-parse --abbrev-ref HEAD 2>/dev/null"
         )
@@ -150,8 +168,9 @@ def get_git_branch():
         if branch and branch != "HEAD":
             return f" {branch}"
 
-    except Exception:
-        pass
+        return " none"
 
-    return None
+    except Exception:
+        return " ~"
+
 
