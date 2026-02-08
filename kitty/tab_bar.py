@@ -1,36 +1,20 @@
 import datetime
+import json
 import subprocess
-from kitty.fast_data_types import Screen
+from collections import defaultdict
+from kitty.boss import get_boss
+from kitty.fast_data_types import Screen, add_timer
 from kitty.tab_bar import (
     DrawData,
     ExtraData,
-    TabBarData,
-    draw_tab_with_powerline,
-    draw_attributed_string,
     Formatter,
+    TabBarData,
     as_rgb,
+    draw_attributed_string,
+    draw_tab_with_powerline,
 )
-from kitty.boss import get_boss
 
-
-# ================= TAB DRAW =================
-def truncate_title(title: str, max_len: int) -> str:
-    if len(title) <= max_len:
-        return title
-    return title[: max_len - 1] + "…"
-
-def format_tab_title(tab: TabBarData) -> str:
-    title = tab.title
-
-    # active tab → show real name truncated
-    if tab.is_active:
-        max_len = 18
-        if len(title) > max_len:
-            return title[: max_len - 3] + "..."
-        return title
-
-    # inactive tab → compact indicator
-    return "..."
+timer_id = None
 
 def draw_tab(
     draw_data: DrawData,
@@ -42,137 +26,93 @@ def draw_tab(
     is_last: bool,
     extra_data: ExtraData,
 ) -> int:
-
-    # choose colors
-    if tab.is_active:
-        bg = as_rgb(int(draw_data.active_bg))
-        fg = as_rgb(int(draw_data.active_fg))
-    else:
-        bg = as_rgb(int(draw_data.inactive_bg))
-        fg = as_rgb(int(draw_data.inactive_fg))
-
-    # left separator
-    screen.cursor.fg = bg
-    screen.draw("")
-
-    # tab background
-    screen.cursor.bg = bg
-    screen.cursor.fg = fg
-
-    title = format_tab_title(tab)
-    screen.draw(f" {title} ")
-
-    # right separator
-    screen.cursor.fg = bg
-    screen.cursor.bg = 0
-    screen.draw("")
-
+    global timer_id
+    # if timer_id is None:
+    #     timer_id = add_timer(_redraw_tab_bar, 2.0, True)
+    
+    draw_tab_with_powerline(
+        draw_data, screen, tab, before, max_title_length, index, is_last, extra_data
+    )
+    
     if is_last:
         draw_right_status(draw_data, screen)
-
+    
     return screen.cursor.x
 
-# ================= RIGHT STATUS =================
 def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
+    """Draw right status mentok ke kanan"""
     draw_attributed_string(Formatter.reset, screen)
-
+    
     cells = create_cells()
     if not cells:
         return
-
-    # --- calculate actual status width (dynamic) ---
-    status_text = ""
-    for c in cells:
-        if isinstance(c, tuple):
-            status_text += c[1]
-        else:
-            status_text += c
-        status_text += " | "
-
-    status_text = status_text[:-3]  # remove last separator
-
-    # approximate terminal cell width (nerd icons = 2 cells)
-    status_width = len(status_text) + 4
-
-    # ---- ABSOLUTE RIGHT POSITION ----
-    right_edge = screen.columns
-
-    start_pos = right_edge - status_width
-    if start_pos < screen.cursor.x:
-        start_pos = screen.cursor.x
-
-    screen.cursor.x = start_pos
-
+    
+    # Build status text
+    status_text = " | ".join(str(c[1]) if isinstance(c, tuple) else str(c) for c in cells)
+    full_status = f" {status_text} "
+    
+    # Hitung lebar dasar dari status
+    base_width = len(full_status)
+    
+    # Hitung jumlah icon dari cells
+    icon_count = 0
+    for cell in cells:
+        cell_text = str(cell[1]) if isinstance(cell, tuple) else str(cell)
+        # Cek apakah cell ini adalah git branch (dimulai dengan space + icon)
+        if cell_text.strip().startswith('') or '' in cell_text:
+            icon_count += 1
+    
+    # Total width
+    status_width = base_width + icon_count
+    separator_width = -3  # ""
+    
+    total_width = separator_width + status_width
+    
+    # DEBUG
+    import sys
+    print(f"Cells: {cells}", file=sys.stderr)
+    print(f"Status: '{full_status}', Base: {base_width}, Icons: {icon_count}, Total: {total_width}", file=sys.stderr)
+    
+    
+    right_pos = screen.columns - total_width
+    
+    if right_pos < screen.cursor.x:
+        right_pos = screen.cursor.x
+    
+    # Set posisi cursor
+    screen.cursor.x = right_pos
+    
+    # Colors
     tab_bg = as_rgb(int(draw_data.inactive_bg))
     tab_fg = as_rgb(int(draw_data.inactive_fg))
-
-    # left rounded separator
+    default_bg = as_rgb(int(draw_data.default_bg))
+    
+    # Draw separator
     screen.cursor.fg = tab_bg
-    screen.draw("")
-
-    # draw cells
+    screen.cursor.bg = default_bg
+    screen.draw("")
+    
+    # Draw status
+    screen.cursor.fg = tab_fg
     screen.cursor.bg = tab_bg
+    screen.draw(full_status)
 
-    for i, cell in enumerate(cells):
-
-        if isinstance(cell, tuple):
-            # colored cell (battery)
-            color, text = cell
-            screen.cursor.fg = as_rgb(color)
-            screen.draw(f" {text} ")
-        else:
-            # normal cell
-            screen.cursor.fg = tab_fg
-            screen.draw(f" {cell} ")
-
-        if i != len(cells) - 1:
-            screen.cursor.fg = tab_fg
-            screen.draw("|")
-
-
-# ================= CELLS =================
-def create_cells():
+def create_cells() -> list:
+    """Create status cells - tanpa battery"""
     cells = []
-
-    battery = get_battery()
-    if battery:
-        cells.append(battery)
-
+    
+    # Git branch
     git = get_git_branch()
     if git:
         cells.append(git)
-
+    
+    # Date and time
     now = datetime.datetime.now()
-    cells.append(now.strftime("%a %d %b"))
+    cells.append(now.strftime("%d %b"))
     cells.append(now.strftime("%H:%M"))
-
+    
     return cells
 
-# ================= BATTERY =================
-def get_battery():
-    try:
-        capacity = subprocess.getoutput("cat /sys/class/power_supply/BAT0/capacity")
-        status = subprocess.getoutput("cat /sys/class/power_supply/BAT0/status")
-        pct = int(capacity)
-
-        icon = "🔋"
-        if status == "Charging":
-            icon = "⚡"
-
-        # One Dark Pro color palette
-        if pct >= 80:
-            color = 0x98c379  # green
-        elif pct >= 50:
-            color = 0xe5c07b  # yellow
-        elif pct >= 25:
-            color = 0xd19a66  # orange
-        else:
-            color = 0xe06c75  # red
-
-        return (color, f"{icon} {pct}%")
-
-    except Exception:
-        return None
 
 # ================= GIT BRANCH =================
 def get_git_branch():
@@ -182,15 +122,12 @@ def get_git_branch():
         if not window:
             return " ~"
 
-        # get real shell pid
         pid = window.child.pid
-
-        # real working directory of shell
         cwd = subprocess.getoutput(f"readlink -f /proc/{pid}/cwd")
+
         if not cwd:
             return " ~"
 
-        # check if folder is a git repo
         is_repo = subprocess.getoutput(
             f"git -C '{cwd}' rev-parse --is-inside-work-tree 2>/dev/null"
         )
@@ -198,17 +135,55 @@ def get_git_branch():
         if is_repo.strip() != "true":
             return " ~"
 
-        # get branch name
         branch = subprocess.getoutput(
             f"git -C '{cwd}' rev-parse --abbrev-ref HEAD 2>/dev/null"
         )
 
-        if branch and branch != "HEAD":
-            return f" {branch}"
-
-        return " none"
-
+        return f" {branch}"
     except Exception:
         return " ~"
 
 
+# ================= OPTIONAL: Keep original functions =================
+def get_headphone_battery_status():
+    """Original headphone battery from community config"""
+    try:
+        battery_pct = int(subprocess.getoutput("headsetcontrol -b -c"))
+    except Exception:
+        status = ""
+    else:
+        if battery_pct < 0:
+            status = ""
+        else:
+            status = f"{battery_pct}% {''[battery_pct // 10]}"
+    return f" {status}"
+
+
+STATE = defaultdict(lambda: "", {"Paused": "", "Playing": ""})
+
+def currently_playing():
+    """Original currently playing from community config"""
+    status = " "
+    data = {}
+    try:
+        data = json.loads(subprocess.getoutput("dbus-player-status"))
+    except ValueError:
+        pass
+    
+    if data:
+        if "state" in data:
+            status = f"{status} {STATE[data['state']]}"
+        if "title" in data:
+            status = f"{status} {data['title']}"
+        if "artist" in data:
+            status = f"{status} - {data['artist']}"
+    else:
+        status = ""
+    
+    return status
+
+
+def _redraw_tab_bar(timer_id):
+    """Redraw tab bar periodically"""
+    for tm in get_boss().all_tab_managers:
+        tm.mark_tab_bar_dirty()
