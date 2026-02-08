@@ -51,7 +51,7 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
     status_text = " | ".join(str(c[1]) if isinstance(c, tuple) else str(c) for c in cells)
     full_status = f" {status_text} "
     
-    # Hitung lebar dasar dari status
+    # Hitung lebar status tanpa icon
     base_width = len(full_status)
     
     # Hitung jumlah icon dari cells
@@ -66,14 +66,7 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
     status_width = base_width + icon_count
     separator_width = -3  # ""
     
-    total_width = separator_width + status_width
-    
-    # DEBUG
-    import sys
-    print(f"Cells: {cells}", file=sys.stderr)
-    print(f"Status: '{full_status}', Base: {base_width}, Icons: {icon_count}, Total: {total_width}", file=sys.stderr)
-    
-    
+    total_width = separator_width + status_width    
     right_pos = screen.columns - total_width
     
     if right_pos < screen.cursor.x:
@@ -109,7 +102,7 @@ def create_cells() -> list:
     # Date and time
     now = datetime.datetime.now()
     cells.append(now.strftime("%d %b"))
-    cells.append(now.strftime("%H:%M"))
+    cells.append(now.strftime("%I:%M %p"))
     
     return cells
 
