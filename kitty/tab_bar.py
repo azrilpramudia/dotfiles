@@ -40,55 +40,78 @@ def draw_tab(
     return screen.cursor.x
 
 def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
-    """Draw right status mentok ke kanan"""
+    """Draw right status dengan powerline separator"""
     draw_attributed_string(Formatter.reset, screen)
     
     cells = create_cells()
     if not cells:
         return
     
-    # Build status text
-    status_text = " | ".join(str(c[1]) if isinstance(c, tuple) else str(c) for c in cells)
-    full_status = f" {status_text} "
+    # Colors
+    default_bg = as_rgb(int(draw_data.default_bg))
     
-    # Hitung lebar status tanpa icon
-    base_width = len(full_status)
+    cell_colors = [
+        (0x61AFEF, 0x282C34),  
+        (0x98C379, 0x282C34),  
+        (0xE5C07B, 0x282C34),  
+    ]
     
-    # Hitung jumlah icon dari cells
-    icon_count = 0
-    for cell in cells:
+    # Hitung total width untuk semua cells dengan separator
+    total_width = 0
+    for i, cell in enumerate(cells):
         cell_text = str(cell[1]) if isinstance(cell, tuple) else str(cell)
-        # Cek apakah cell ini adalah git branch (dimulai dengan space + icon)
-        if cell_text.strip().startswith('') or '' in cell_text:
-            icon_count += 1
+        
+        # Hitung lebar cell + icon adjustment
+        cell_width = len(cell_text) + 2  # +2 untuk space kiri-kanan " text "
+        if '' in cell_text:
+            cell_width += 1  # icon butuh extra space
+        
+        total_width += cell_width + -1  # untuk separator ""
     
-    # Total width
-    status_width = base_width + icon_count
-    separator_width = -3  # ""
+    total_width += 1  # +1 untuk separator kanan ""
     
-    total_width = separator_width + status_width    
+    # Posisi start dari kanan
     right_pos = screen.columns - total_width
-    
     if right_pos < screen.cursor.x:
         right_pos = screen.cursor.x
     
-    # Set posisi cursor
     screen.cursor.x = right_pos
     
-    # Colors
-    tab_bg = as_rgb(int(draw_data.inactive_bg))
-    tab_fg = as_rgb(int(draw_data.inactive_fg))
-    default_bg = as_rgb(int(draw_data.default_bg))
+    # Draw cells dengan powerline separator
+    for i, cell in enumerate(cells):
+        cell_text = str(cell[1]) if isinstance(cell, tuple) else str(cell)
+        
+        # Ambil warna cell
+        if i < len(cell_colors):
+            cell_bg, cell_fg = cell_colors[i]
+            cell_bg = as_rgb(cell_bg)
+            cell_fg = as_rgb(cell_fg)
+        else:
+            cell_bg = as_rgb(int(draw_data.active_bg))
+            cell_fg = as_rgb(int(draw_data.active_fg))
+        
+        # Draw separator powerline "" (kiri - arah kanan)
+        if i == 0:
+            screen.cursor.fg = cell_bg
+            screen.cursor.bg = default_bg
+        else:
+            prev_bg = as_rgb(cell_colors[i-1][0]) if i-1 < len(cell_colors) else cell_bg
+            screen.cursor.fg = cell_bg
+            screen.cursor.bg = prev_bg
+        
+        screen.draw("")  # Powerline classic kiri
+        
+        # Draw cell content
+        screen.cursor.fg = cell_fg
+        screen.cursor.bg = cell_bg
+        screen.draw(f" {cell_text} ")
     
-    # Draw separator
-    screen.cursor.fg = tab_bg
+    # ========== SEPARATOR KANAN (POWERLINE CLASSIC) ==========
+    last_cell_bg = as_rgb(cell_colors[len(cells)-1][0]) if len(cells) <= len(cell_colors) else cell_bg
+    
+    screen.cursor.fg = last_cell_bg
     screen.cursor.bg = default_bg
     screen.draw("")
-    
-    # Draw status
-    screen.cursor.fg = tab_fg
-    screen.cursor.bg = tab_bg
-    screen.draw(full_status)
 
 def create_cells() -> list:
     """Create status cells - tanpa battery"""
