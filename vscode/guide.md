@@ -1,12 +1,18 @@
-## remove chache on dock plank
+## Remove Chache on Dock Plank
 
+```bash
 rm ~/.config/plank/dock1/launchers/code.dockitem 2>/dev/null
 rm ~/.config/plank/dock1/launchers/visual-studio-code.dockitem 2>/dev/null
+```
 
-## verify code.desktop launcher
+## Verify code.desktop Launcher
+```bash
 ls ~/.local/share/applications/code.desktop
+```
 
-## reload
+## Reload
+```bash
 xfdesktop --reload
+```
 
-## if not work, try to logout or reboot this device 
+## if not work, try to logout or reboot this device
