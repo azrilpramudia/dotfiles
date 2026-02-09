@@ -56,12 +56,12 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
         (0xE5C07B, 0x282C34),  
     ]
     
-    # Hitung total width untuk semua cells dengan separator
+    # Calculate total width for all cells with separator
     total_width = 0
     for i, cell in enumerate(cells):
         cell_text = str(cell[1]) if isinstance(cell, tuple) else str(cell)
         
-        # Hitung lebar cell + icon adjustment
+        # Calculate cell width + adjustment icon
         cell_width = len(cell_text) + 2 
         if '' in cell_text:
             cell_width += 1  
@@ -69,18 +69,18 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
         total_width += cell_width  
     total_width += 0  
     
-    # Posisi start dari kanan
+    # Starting position from the right
     right_pos = screen.columns - total_width
     if right_pos < screen.cursor.x:
         right_pos = screen.cursor.x
     
     screen.cursor.x = right_pos
     
-    # Draw cells dengan powerline separator
+    # Draw cells with powerline separator
     for i, cell in enumerate(cells):
         cell_text = str(cell[1]) if isinstance(cell, tuple) else str(cell)
         
-        # Ambil warna cell
+        # Get cell colors
         if i < len(cell_colors):
             cell_bg, cell_fg = cell_colors[i]
             cell_bg = as_rgb(cell_bg)
@@ -150,48 +150,3 @@ def get_git_branch():
         return f" {branch}"
     except Exception:
         return " ~"
-
-
-# ================= OPTIONAL: Keep original functions =================
-def get_headphone_battery_status():
-    """Original headphone battery from community config"""
-    try:
-        battery_pct = int(subprocess.getoutput("headsetcontrol -b -c"))
-    except Exception:
-        status = ""
-    else:
-        if battery_pct < 0:
-            status = ""
-        else:
-            status = f"{battery_pct}% {''[battery_pct // 10]}"
-    return f" {status}"
-
-
-STATE = defaultdict(lambda: "", {"Paused": "", "Playing": ""})
-
-def currently_playing():
-    """Original currently playing from community config"""
-    status = " "
-    data = {}
-    try:
-        data = json.loads(subprocess.getoutput("dbus-player-status"))
-    except ValueError:
-        pass
-    
-    if data:
-        if "state" in data:
-            status = f"{status} {STATE[data['state']]}"
-        if "title" in data:
-            status = f"{status} {data['title']}"
-        if "artist" in data:
-            status = f"{status} - {data['artist']}"
-    else:
-        status = ""
-    
-    return status
-
-
-def _redraw_tab_bar(timer_id):
-    """Redraw tab bar periodically"""
-    for tm in get_boss().all_tab_managers:
-        tm.mark_tab_bar_dirty()
