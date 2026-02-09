@@ -39,6 +39,8 @@ def draw_tab(
     
     return screen.cursor.x
 
+WHITE = as_rgb(0xE6E6E6)
+
 def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
     """Draw right status dengan powerline separator"""
     draw_attributed_string(Formatter.reset, screen)
@@ -51,7 +53,7 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
     default_bg = as_rgb(int(draw_data.default_bg))
     
     cell_colors = [
-        (0x61AFEF, 0x282C34),  
+        (0x61AFEF, 0x282C34),
         (0x98C379, 0x282C34),  
         (0xE5C07B, 0x282C34),  
     ]
@@ -102,16 +104,9 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
         screen.draw("")  # Powerline classic kiri
         
         # Draw cell content
-        screen.cursor.fg = cell_fg
+        screen.cursor.fg = WHITE
         screen.cursor.bg = cell_bg
         screen.draw(f" {cell_text} ")
-    
-    # ========== SEPARATOR KANAN (POWERLINE CLASSIC) ==========
-    last_cell_bg = as_rgb(cell_colors[len(cells)-1][0]) if len(cells) <= len(cell_colors) else cell_bg
-    
-    screen.cursor.fg = last_cell_bg
-    screen.cursor.bg = default_bg
-    screen.draw("")
 
 def create_cells() -> list:
     """Create status cells - tanpa battery"""
