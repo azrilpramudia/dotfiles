@@ -39,8 +39,6 @@ def draw_tab(
     
     return screen.cursor.x
 
-WHITE = as_rgb(0xE6E6E6)
-
 def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
     """Draw right status dengan powerline separator"""
     draw_attributed_string(Formatter.reset, screen)
@@ -68,9 +66,8 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
         if '' in cell_text:
             cell_width += 1  # icon butuh extra space
         
-        total_width += cell_width + -1  # untuk separator ""
-    
-    total_width += 1  # +1 untuk separator kanan ""
+        total_width += cell_width  # untuk separator ""
+    total_width += 0  # +1 untuk separator kanan ""
     
     # Posisi start dari kanan
     right_pos = screen.columns - total_width
@@ -104,7 +101,7 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
         screen.draw("")  # Powerline classic kiri
         
         # Draw cell content
-        screen.cursor.fg = WHITE
+        screen.cursor.fg = cell_fg
         screen.cursor.bg = cell_bg
         screen.draw(f" {cell_text} ")
 
