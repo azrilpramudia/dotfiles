@@ -62,12 +62,12 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
         cell_text = str(cell[1]) if isinstance(cell, tuple) else str(cell)
         
         # Hitung lebar cell + icon adjustment
-        cell_width = len(cell_text) + 2  # +2 untuk space kiri-kanan " text "
+        cell_width = len(cell_text) + 2 
         if '' in cell_text:
-            cell_width += 1  # icon butuh extra space
+            cell_width += 1  
         
-        total_width += cell_width  # untuk separator ""
-    total_width += 0  # +1 untuk separator kanan ""
+        total_width += cell_width  
+    total_width += 0  
     
     # Posisi start dari kanan
     right_pos = screen.columns - total_width
@@ -89,7 +89,7 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
             cell_bg = as_rgb(int(draw_data.active_bg))
             cell_fg = as_rgb(int(draw_data.active_fg))
         
-        # Draw separator powerline "" (kiri - arah kanan)
+        # Draw separator powerline
         if i == 0:
             screen.cursor.fg = cell_bg
             screen.cursor.bg = default_bg
@@ -98,7 +98,7 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
             screen.cursor.fg = cell_bg
             screen.cursor.bg = prev_bg
         
-        screen.draw("")  # Powerline classic kiri
+        screen.draw("")
         
         # Draw cell content
         screen.cursor.fg = cell_fg
