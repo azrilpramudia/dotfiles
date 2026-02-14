@@ -44,70 +44,40 @@ def draw_tab(
     return screen.cursor.x
 
 def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
-    """Draw right status dengan powerline separator"""
+    # The tabs may have left some formats enabled. Disable them now.
     draw_attributed_string(Formatter.reset, screen)
-    
     cells = create_cells()
-    if not cells:
-        return
-    
-    # Colors
+    # Drop cells that wont fit
+    while True:
+        if not cells:
+            return
+        padding = screen.columns - screen.cursor.x - sum(len(c) + 3 for c in cells)
+        if padding >= 0:
+            break
+        cells = cells[1:]
+
+    if padding:
+        screen.draw(" " * padding)
+
+    tab_bg = as_rgb(int(draw_data.inactive_bg))
+    tab_fg = as_rgb(int(draw_data.inactive_fg))
     default_bg = as_rgb(int(draw_data.default_bg))
-    
-    cell_colors = [
-        (0x61AFEF, 0x282C34),
-        (0x98C379, 0x282C34),  
-        (0xE5C07B, 0x282C34),  
-    ]
-    
-    # Calculate total width for all cells with separator
-    total_width = 0
-    for i, cell in enumerate(cells):
-        cell_text = str(cell[1]) if isinstance(cell, tuple) else str(cell)
-        
-        # Calculate cell width + adjustment icon
-        cell_width = len(cell_text) + 2 
-        if '' in cell_text:
-            cell_width += 1  
-        
-        total_width += cell_width  
-    total_width += 0  
-    
-    # Starting position from the right
-    right_pos = screen.columns - total_width
-    if right_pos < screen.cursor.x:
-        right_pos = screen.cursor.x
-    
-    screen.cursor.x = right_pos
-    
-    # Draw cells with powerline separator
-    for i, cell in enumerate(cells):
-        cell_text = str(cell[1]) if isinstance(cell, tuple) else str(cell)
-        
-        # Get cell colors
-        if i < len(cell_colors):
-            cell_bg, cell_fg = cell_colors[i]
-            cell_bg = as_rgb(cell_bg)
-            cell_fg = as_rgb(cell_fg)
-        else:
-            cell_bg = as_rgb(int(draw_data.active_bg))
-            cell_fg = as_rgb(int(draw_data.active_fg))
-        
-        # Draw separator powerline
-        if i == 0:
-            screen.cursor.fg = cell_bg
+    for cell in cells:
+        # Draw the separator
+        if cell == cells[0]:
+            # Segitiga pembuka paling kiri (menghadap ke kiri)
+            screen.cursor.fg = tab_bg
             screen.cursor.bg = default_bg
+            screen.draw("") 
         else:
-            prev_bg = as_rgb(cell_colors[i-1][0]) if i-1 < len(cell_colors) else cell_bg
-            screen.cursor.fg = cell_bg
-            screen.cursor.bg = prev_bg
-        
-        screen.draw("")
-        
-        # Draw cell content
-        screen.cursor.fg = cell_fg
-        screen.cursor.bg = cell_bg
-        screen.draw(f" {cell_text} ")
+            # Separator antar cell (garis tipis segitiga)
+            screen.cursor.fg = default_bg # atau bisa pakai warna spesifik
+            screen.cursor.bg = tab_bg
+            screen.draw("") # Simbol segitiga tipis
+            
+        screen.cursor.fg = tab_fg
+        screen.cursor.bg = tab_bg
+        screen.draw(f" {cell} ")
 
 def create_cells() -> list:
     """Create status cells - tanpa battery"""
