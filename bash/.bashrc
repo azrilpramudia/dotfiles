@@ -130,7 +130,7 @@ export SDKMAN_DIR="$HOME/.sdkman"
 ## CUSTOM COMMANDS
 
 # username colors
-export PS1='\[\e[0;36m\]\u\[\e[0m\]@\[\e[0;32m\]\h\[\e[0m\]:\[\e[0;35m\]\w\[\e[0m\]>'
+export PS1='\[\e[1;36m\]\u\[\e[0m\]@\[\e[1;32m\]\h\[\e[0m\]:\[\e[1;35m\]\w\[\e[0m\]>'
 
 # Alias
 alias ls='eza --icons'

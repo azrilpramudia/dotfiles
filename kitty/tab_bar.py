@@ -29,10 +29,14 @@ def draw_tab(
     global timer_id
     # if timer_id is None:
     #     timer_id = add_timer(_redraw_tab_bar, 2.0, True)
+
+    tab = tab._replace(title=f"{index}")
     
+    screen.cursor.bold = True
     draw_tab_with_powerline(
         draw_data, screen, tab, before, max_title_length, index, is_last, extra_data
     )
+    screen.cursor.bold = False
     
     if is_last:
         draw_right_status(draw_data, screen)
