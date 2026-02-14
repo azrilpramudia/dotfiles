@@ -121,9 +121,25 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 export PATH="$HOME/.local/kitty.app/bin:$PATH"
 
-# Alias EZA
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+. "$HOME/.cargo/env"
+
+
+## CUSTOM COMMANDS
+
+# username colors
+export PS1='\[\e[0;36m\]\u\[\e[0m\]@\[\e[0;32m\]\h\[\e[0m\]:\[\e[0;35m\]\w\[\e[0m\]>'
+
+# Alias
 alias ls='eza --icons'
 alias ll='eza -l --icons --git'
 alias la='eza -la --icons --git'
+alias lt='eza -T --icons --git'
 alias tree='eza --tree --icons'
-
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -i'
+alias rspanel='xfce4-panel -r'
+alias open-img='xdg-open'
