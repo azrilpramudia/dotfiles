@@ -1,4 +1,5 @@
 import datetime
+from email.policy import default
 import json
 import subprocess
 from collections import defaultdict
@@ -44,40 +45,65 @@ def draw_tab(
     return screen.cursor.x
 
 def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
-    # The tabs may have left some formats enabled. Disable them now.
+    # Reset format agar tidak bertabrakan dengan tab sebelumnya
     draw_attributed_string(Formatter.reset, screen)
+    
     cells = create_cells()
-    # Drop cells that wont fit
+    if not cells:
+        return
+
+    # Hitung total lebar untuk menentukan padding
+    # (Setiap cell + 2 spasi + 1 karakter separator)
     while True:
-        if not cells:
-            return
         padding = screen.columns - screen.cursor.x - sum(len(c) + 3 for c in cells)
         if padding >= 0:
             break
+        if not cells:
+            return
         cells = cells[1:]
 
-    if padding:
+    if padding > 0:
         screen.draw(" " * padding)
 
-    tab_bg = as_rgb(int(draw_data.inactive_bg))
-    tab_fg = as_rgb(int(draw_data.inactive_fg))
+    # 1. Definisikan Warna untuk masing-masing cell (BG, FG)
+    # Anda bisa mengganti kode HEX di bawah ini sesuai selera
+    cell_colors = [
+        (as_rgb(0x61AFEF), as_rgb(0x282C34)), # Biru   (Git Branch)
+        (as_rgb(0x98C379), as_rgb(0x282C34)), # Hijau  (Tanggal)
+        (as_rgb(0xE5C07B), as_rgb(0x282C34)), # Kuning (Waktu)
+    ]
+    
     default_bg = as_rgb(int(draw_data.default_bg))
-    for cell in cells:
-        # Draw the separator
-        if cell == cells[0]:
-            # Segitiga pembuka paling kiri (menghadap ke kiri)
-            screen.cursor.fg = tab_bg
-            screen.cursor.bg = default_bg
-            screen.draw("") 
+
+    # 2. Loop untuk menggambar setiap cell
+    for i, cell in enumerate(cells):
+        # Pilih warna berdasarkan indeks, jika cell lebih banyak gunakan warna terakhir
+        if i < len(cell_colors):
+            current_bg, current_fg = cell_colors[i]
         else:
-            # Separator antar cell (garis tipis segitiga)
-            screen.cursor.fg = default_bg # atau bisa pakai warna spesifik
-            screen.cursor.bg = tab_bg
-            screen.draw("") # Simbol segitiga tipis
-            
-        screen.cursor.fg = tab_fg
-        screen.cursor.bg = tab_bg
+            current_bg, current_fg = cell_colors[-1]
+
+        # --- Bagian Menggambar Separator Segitiga ---
+        if i == 0:
+            # Separator pertama: Backgroundnya mengikuti warna terminal (default_bg)
+            screen.cursor.fg = current_bg
+            screen.cursor.bg = default_bg
+            screen.draw("")
+        else:
+            # Separator antar cell: Backgroundnya mengikuti warna cell sebelumnya
+            # Ini yang membuat efek "menyambung" antar warna
+            prev_bg = cell_colors[i-1][0] if i-1 < len(cell_colors) else cell_colors[-1][0]
+            screen.cursor.fg = current_bg
+            screen.cursor.bg = prev_bg
+            screen.draw("")
+
+        # --- Bagian Menggambar Teks/Isi Cell ---
+        screen.cursor.fg = current_fg
+        screen.cursor.bg = current_bg
         screen.draw(f" {cell} ")
+
+    # Reset warna kembali ke default setelah selesai
+    draw_attributed_string(Formatter.reset, screen)
 
 def create_cells() -> list:
     """Create status cells - tanpa battery"""

@@ -143,3 +143,6 @@ alias mv='mv -i'
 alias rm='rm -i'
 alias rspanel='xfce4-panel -r'
 alias open-img='xdg-open'
+
+
+export UBUNTU_MENUPROXY=1
