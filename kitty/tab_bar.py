@@ -45,15 +45,12 @@ def draw_tab(
     return screen.cursor.x
 
 def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
-    # Reset format agar tidak bertabrakan dengan tab sebelumnya
     draw_attributed_string(Formatter.reset, screen)
     
     cells = create_cells()
     if not cells:
         return
-
-    # Hitung total lebar untuk menentukan padding
-    # (Setiap cell + 2 spasi + 1 karakter separator)
+    
     while True:
         padding = screen.columns - screen.cursor.x - sum(len(c) + 3 for c in cells)
         if padding >= 0:
@@ -65,44 +62,34 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
     if padding > 0:
         screen.draw(" " * padding)
 
-    # 1. Definisikan Warna untuk masing-masing cell (BG, FG)
-    # Anda bisa mengganti kode HEX di bawah ini sesuai selera
     cell_colors = [
-        (as_rgb(0x61AFEF), as_rgb(0x282C34)), # Biru   (Git Branch)
-        (as_rgb(0x98C379), as_rgb(0x282C34)), # Hijau  (Tanggal)
-        (as_rgb(0xE5C07B), as_rgb(0x282C34)), # Kuning (Waktu)
+        (as_rgb(0x61AFEF), as_rgb(0x282C34)),
+        (as_rgb(0x98C379), as_rgb(0x282C34)), 
+        (as_rgb(0xE5C07B), as_rgb(0x282C34)), 
     ]
     
     default_bg = as_rgb(int(draw_data.default_bg))
 
-    # 2. Loop untuk menggambar setiap cell
     for i, cell in enumerate(cells):
-        # Pilih warna berdasarkan indeks, jika cell lebih banyak gunakan warna terakhir
         if i < len(cell_colors):
             current_bg, current_fg = cell_colors[i]
         else:
             current_bg, current_fg = cell_colors[-1]
 
-        # --- Bagian Menggambar Separator Segitiga ---
         if i == 0:
-            # Separator pertama: Backgroundnya mengikuti warna terminal (default_bg)
             screen.cursor.fg = current_bg
             screen.cursor.bg = default_bg
             screen.draw("")
         else:
-            # Separator antar cell: Backgroundnya mengikuti warna cell sebelumnya
-            # Ini yang membuat efek "menyambung" antar warna
             prev_bg = cell_colors[i-1][0] if i-1 < len(cell_colors) else cell_colors[-1][0]
             screen.cursor.fg = current_bg
             screen.cursor.bg = prev_bg
             screen.draw("")
 
-        # --- Bagian Menggambar Teks/Isi Cell ---
         screen.cursor.fg = current_fg
         screen.cursor.bg = current_bg
         screen.draw(f" {cell} ")
 
-    # Reset warna kembali ke default setelah selesai
     draw_attributed_string(Formatter.reset, screen)
 
 def create_cells() -> list:
