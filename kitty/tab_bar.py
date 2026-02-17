@@ -118,30 +118,28 @@ import time
 
 def get_spotify_status():
     try:
-        play_status = subprocess.getoutput("playerctl status 2>/dev/null").strip()
-        if not play_status or "No players found" in play_status:
+        raw = subprocess.getoutput(
+            "playerctl metadata --format '{{status}} {{artist}} - {{title}}' 2>/dev/null"
+        ).strip()
+        
+        if not raw or "No players found" in raw:
             return None
+
+        # Split the status and metadata
+        parts = raw.split(" ", 1)
+        play_status = parts[0]
+        metadata = parts[1] if len(parts) > 1 else "Spotify"
 
         status_icon = "󰐊" if play_status == "Playing" else "󰏤"
         music_icon = "󰝚"
 
-        metadata = subprocess.getoutput(
-            "playerctl metadata --format '{{ artist }} - {{ title }}' 2>/dev/null"
-        ).strip()
-        
-        if not metadata:
-            return f"{music_icon} {status_icon} Spotify"
-
-        # RUNNING TEXT
         display_len = 20
         if len(metadata) > display_len:
-            # add padding for smooth scrolling
             padding_text = metadata + "   |   "
-            # Calculate shift based on time to create marquee effect
-            shift = int(time.time() * 2) % len(padding_text) 
-            # Create marquee text by slicing the padded string
-            marquee_text = (padding_text[shift:] + padding_text[:shift])[:display_len]
-            metadata = marquee_text
+            # Only scroll if the song is playing
+            speed = 2 if play_status == "Playing" else 0 
+            shift = int(time.time() * speed) % len(padding_text) if speed > 0 else 0
+            metadata = (padding_text[shift:] + padding_text[:shift])[:display_len]
             
         return f"{music_icon} {status_icon} {metadata}"
     except Exception:
