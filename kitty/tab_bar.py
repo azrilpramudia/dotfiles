@@ -104,7 +104,7 @@ def create_cells() -> list:
     # Date and time
     now = datetime.datetime.now()
     cells.append(now.strftime("%d %b"))
-    cells.append(now.strftime("%I:%M %p"))
+    cells.append(now.strftime("%I:%M"))
     
     return cells
 
