@@ -86,9 +86,11 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
             screen.cursor.bg = prev_bg
             screen.draw("")
 
+        # screen.cursor.bold = True
         screen.cursor.fg = current_fg
         screen.cursor.bg = current_bg
         screen.draw(f" {cell} ")
+        # screen.cursor.bold = False
 
     draw_attributed_string(Formatter.reset, screen)
 
