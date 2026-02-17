@@ -63,45 +63,42 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
         screen.draw(" " * padding)
 
     cell_colors = [
-        (as_rgb(0x61AFEF), as_rgb(0x282C34)),
-        (as_rgb(0x98C379), as_rgb(0x282C34)), 
-        (as_rgb(0xE5C07B), as_rgb(0x282C34)), 
+        (as_rgb(0x61AFEF), as_rgb(0x282C34)), 
+        (as_rgb(0xC678DD), as_rgb(0x282C34)),
+        (as_rgb(0x98C379), as_rgb(0x282C34)),
     ]
     
     default_bg = as_rgb(int(draw_data.default_bg))
 
     for i, cell in enumerate(cells):
-        if i < len(cell_colors):
-            current_bg, current_fg = cell_colors[i]
-        else:
-            current_bg, current_fg = cell_colors[-1]
+        current_bg, current_fg = cell_colors[i] if i < len(cell_colors) else cell_colors[-1]
 
+        # --- SEPARATOR --- #
         if i == 0:
             screen.cursor.fg = current_bg
             screen.cursor.bg = default_bg
             screen.draw("")
         else:
-            prev_bg = cell_colors[i-1][0] if i-1 < len(cell_colors) else cell_colors[-1][0]
+            prev_bg = cell_colors[i-1][0]
             screen.cursor.fg = current_bg
             screen.cursor.bg = prev_bg
             screen.draw("")
 
-        # screen.cursor.bold = True
+        # --- CELLS --- #
+        screen.cursor.bold = True    
         screen.cursor.fg = current_fg
         screen.cursor.bg = current_bg
         screen.draw(f" {cell} ")
-        # screen.cursor.bold = False
-
-    draw_attributed_string(Formatter.reset, screen)
+        screen.cursor.bold = False
 
 def create_cells() -> list:
-    """Create status cells - tanpa battery"""
+    """Create status cells - Spotify + Waktu"""
     cells = []
     
-    # Git branch
-    git = get_git_branch()
-    if git:
-        cells.append(git)
+    # Spotify Status
+    song = get_spotify_status()
+    if song:
+        cells.append(song)
     
     # Date and time
     now = datetime.datetime.now()
@@ -111,31 +108,34 @@ def create_cells() -> list:
     return cells
 
 
-# ================= GIT BRANCH =================
-def get_git_branch():
+# ================= Spotify =================
+def get_spotify_status():
     try:
-        boss = get_boss()
-        window = boss.active_window
-        if not window:
-            return " ~"
+        # 1. Cek Status (Playing/Paused)
+        play_status = subprocess.getoutput("playerctl status 2>/dev/null").strip()
+        
+        if not play_status or "No players found" in play_status:
+            return None
 
-        pid = window.child.pid
-        cwd = subprocess.getoutput(f"readlink -f /proc/{pid}/cwd")
+        # Icon Status: 󰐊 = Play, 󰏤 = Pause
+        status_icon = "󰐊" if play_status == "Playing" else "󰏤"
+        # Icon Musik: 󰝚 (Tetap ada di samping)
+        music_icon = "󰝚"
 
-        if not cwd:
-            return " ~"
+        # 2. Ambil Metadata (Artist - Title)
+        metadata = subprocess.getoutput(
+            "playerctl metadata --format '{{ artist }} - {{ title }}' 2>/dev/null"
+        ).strip()
+        
+        if not metadata:
+            return f"{music_icon} {status_icon} Spotify"
 
-        is_repo = subprocess.getoutput(
-            f"git -C '{cwd}' rev-parse --is-inside-work-tree 2>/dev/null"
-        )
-
-        if is_repo.strip() != "true":
-            return " ~"
-
-        branch = subprocess.getoutput(
-            f"git -C '{cwd}' rev-parse --abbrev-ref HEAD 2>/dev/null"
-        )
-
-        return f" {branch}"
+        # Batasi panjang judul agar tidak offside/terlalu lebar
+        max_len = 20 
+        if len(metadata) > max_len:
+            metadata = metadata[:max_len] + ".."
+            
+        # Format: [Icon Musik] [Status] [Judul Lagu]
+        return f"{music_icon} {status_icon} {metadata}"
     except Exception:
-        return " ~"
+        return None
