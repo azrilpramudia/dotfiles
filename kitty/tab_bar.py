@@ -28,8 +28,8 @@ def draw_tab(
     extra_data: ExtraData,
 ) -> int:
     global timer_id
-    # if timer_id is None:
-    #     timer_id = add_timer(_redraw_tab_bar, 2.0, True)
+    if timer_id is None:
+        timer_id = add_timer(_redraw_tab_bar, 0.1, True)
 
     tab = tab._replace(title=f"{index}")
     
@@ -92,7 +92,7 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
         screen.cursor.bold = False
 
 def create_cells() -> list:
-    """Create status cells - Spotify + Waktu"""
+    """Create status cells - Spotify + Time"""
     cells = []
     
     # Spotify Status
@@ -107,22 +107,24 @@ def create_cells() -> list:
     
     return cells
 
+def _redraw_tab_bar(timer_id):
+    from kitty.boss import get_boss
+    boss = get_boss()
+    if boss:
+        boss.set_colors()
 
 # ================= Spotify =================
+import time
+
 def get_spotify_status():
     try:
-        # 1. Cek Status (Playing/Paused)
         play_status = subprocess.getoutput("playerctl status 2>/dev/null").strip()
-        
         if not play_status or "No players found" in play_status:
             return None
 
-        # Icon Status: 󰐊 = Play, 󰏤 = Pause
         status_icon = "󰐊" if play_status == "Playing" else "󰏤"
-        # Icon Musik: 󰝚 (Tetap ada di samping)
         music_icon = "󰝚"
 
-        # 2. Ambil Metadata (Artist - Title)
         metadata = subprocess.getoutput(
             "playerctl metadata --format '{{ artist }} - {{ title }}' 2>/dev/null"
         ).strip()
@@ -130,12 +132,17 @@ def get_spotify_status():
         if not metadata:
             return f"{music_icon} {status_icon} Spotify"
 
-        # Batasi panjang judul agar tidak offside/terlalu lebar
-        max_len = 20 
-        if len(metadata) > max_len:
-            metadata = metadata[:max_len] + ".."
+        # RUNNING TEXT
+        display_len = 20
+        if len(metadata) > display_len:
+            # add padding for smooth scrolling
+            padding_text = metadata + "   |   "
+            # Calculate shift based on time to create marquee effect
+            shift = int(time.time() * 2) % len(padding_text) 
+            # Create marquee text by slicing the padded string
+            marquee_text = (padding_text[shift:] + padding_text[:shift])[:display_len]
+            metadata = marquee_text
             
-        # Format: [Icon Musik] [Status] [Judul Lagu]
         return f"{music_icon} {status_icon} {metadata}"
     except Exception:
         return None
