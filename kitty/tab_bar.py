@@ -62,16 +62,19 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
     if padding > 0:
         screen.draw(" " * padding)
 
-    cell_colors = [
-        (as_rgb(0x61AFEF), as_rgb(0x282C34)), 
-        (as_rgb(0xC678DD), as_rgb(0x282C34)),
-        (as_rgb(0x98C379), as_rgb(0x282C34)),
-    ]
+    color_spotify = (as_rgb(0x61AFEF), as_rgb(0x282C34)) # Blue
+    color_date    = (as_rgb(0xC678DD), as_rgb(0x282C34)) # Magenta
+    color_clock   = (as_rgb(0x98C379), as_rgb(0x282C34)) # Green
     
     default_bg = as_rgb(int(draw_data.default_bg))
 
     for i, cell in enumerate(cells):
-        current_bg, current_fg = cell_colors[i] if i < len(cell_colors) else cell_colors[-1]
+        if "󰝚" in cell:
+            current_bg, current_fg = color_spotify
+        elif ":" in cell:
+            current_bg, current_fg = color_clock
+        else:
+            current_bg, current_fg = color_date
 
         # --- SEPARATOR --- #
         if i == 0:
@@ -79,7 +82,14 @@ def draw_right_status(draw_data: DrawData, screen: Screen) -> None:
             screen.cursor.bg = default_bg
             screen.draw("")
         else:
-            prev_bg = cell_colors[i-1][0]
+            prev_cell = cells[i-1]
+            if "󰝚" in prev_cell:
+                prev_bg = color_spotify[0]
+            elif ":" in prev_cell:
+                prev_bg = color_clock[0]
+            else:
+                prev_bg = color_date[0]
+                
             screen.cursor.fg = current_bg
             screen.cursor.bg = prev_bg
             screen.draw("")
