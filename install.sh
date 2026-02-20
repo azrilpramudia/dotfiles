@@ -35,8 +35,8 @@ echo "Installing essential packages..."
 sudo apt update
 sudo apt install -y \
     fastfetch \
-    eza \
-    btop \
+    htop \
+    aria2 \
     git \
     curl
 
