@@ -152,7 +152,7 @@ function __pb10k_prompt_scm {
   local color=$_omb_prompt_bold_green
   scm
   local box=""
-  local info="$(if [ "$SCM" == "git" ]; then _omb_util_print "  "; fi)"
+  local info="$(if [ "$SCM" == "" ]; then _omb_util_print "  "; fi)"
   info+="$(if [ "$SCM" != "NONE" ]; then _omb_util_print " $(scm_prompt_info)"; fi)"
   [[ $info ]] || return 0
   printf "%s|%s|%s|%s" "$color" "$info" "$_omb_prompt_bold_green" "$box"

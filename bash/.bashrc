@@ -187,3 +187,7 @@ alias open-img='xdg-open'
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Hidden
+pb10k show scm
+pb10k hide clock
