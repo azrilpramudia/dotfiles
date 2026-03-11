@@ -100,7 +100,7 @@ Then install plugins inside Neovim:
 
 More documentation can be found in:
 
-[**vim/neovim documentation**](docs/vim-guide.md)
+[**vim/neovim documentation**](docs/neovim-guide.md)
 
 ---
 
