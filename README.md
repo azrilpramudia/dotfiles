@@ -1,6 +1,8 @@
 <div align="center">
 
-<img src="" width="400" alt="Dotfiles Banner">
+<img src="/assets/penguin.webp" width="200" alt="Dotfiles Banner">
+
+<br>
 
 ![Linux](https://img.shields.io/badge/Linux-Dotfiles-3E8BC3?style=flat&logo=linux&logoColor=white)
 ![Kitty](https://img.shields.io/badge/Kitty-Terminal-D18692?style=flat&logo=kitty&logoColor=white)
