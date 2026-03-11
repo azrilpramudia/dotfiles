@@ -1,3 +1,17 @@
+<div align="center">
+
+<img src="" width="400" alt="Dotfiles Banner">
+
+![Linux](https://img.shields.io/badge/Linux-Dotfiles-3E8BC3?style=flat&logo=linux&logoColor=white)
+![Kitty](https://img.shields.io/badge/Kitty-Terminal-D18692?style=flat&logo=kitty&logoColor=white)
+![Tmux](https://img.shields.io/badge/Tmux-3.6a-00ad00?style=flat&logo=tmux&logoColor=white)
+![Fastfetch](https://img.shields.io/badge/Fastfetch-System-f5c2e7?style=flat&logo=linux&logoColor=white)
+![Vim](https://img.shields.io/badge/Editor-Vim-019733?style=flat&logo=vim&logoColor=white)
+
+</div>
+
+
+
 # Linux Dotfiles
 
 My personal **Linux customization and configuration files** for development and terminal workflow.
