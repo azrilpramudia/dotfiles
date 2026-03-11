@@ -34,11 +34,15 @@ ln -sf "$DOTFILES/bash/.bashrc" ~/.bashrc
 echo "Installing essential packages..."
 sudo apt update
 sudo apt install -y \
+    neovim \
     fastfetch \
     htop \
-    aria2 \
+    kitty \
     git \
-    curl
+    curl \
+    nano \
+    picom \
+    tmux
 
 # --------- Font cache ----------
 echo "Refreshing font cache..."
