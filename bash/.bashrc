@@ -191,3 +191,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # Hidden
 pb10k show scm
 pb10k hide clock
+
+# OpenClaw Completion
+source "/home/meow/.openclaw/completions/openclaw.bash"
