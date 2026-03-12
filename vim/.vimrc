@@ -1,6 +1,7 @@
+" --- Plugin ----
 call plug#begin()
-" Masukkan plugin Catppuccin di sini
 Plug 'catppuccin/vim', { 'as': 'catppuccin' }
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && npx --yes yarn install' }
 call plug#end()
 
 " --- Basic view ---
