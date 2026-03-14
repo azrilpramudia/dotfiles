@@ -1,8 +1,27 @@
 " --- Plugin ----
 call plug#begin()
+
+" Theme & UI
 Plug 'catppuccin/vim', { 'as': 'catppuccin' }
+Plug 'vim-airline/vim-airline'
+Plug 'ryanoasis/vim-devicons'
+
+" Navigation
+Plug 'preservim/nerdtree'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+
+" Tools
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && npx --yes yarn install' }
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'sheerun/vim-polyglot'
+Plug 'jiangmiao/auto-pairs'
+Plug 'airblade/vim-gitgutter'
+
 call plug#end()
+
+" --- Shortcut ----
+" Press CTRL+N to open/close folder explorer
+nnoremap <C-n> :NERDTreeToggle<CR>
 
 " --- Basic view ---
 syntax on
