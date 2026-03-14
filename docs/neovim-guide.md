@@ -1,9 +1,24 @@
-# Neovim Guide
+# Neovim / Vim Guide
 
-A simple guide for setting up **Neovim/Vim**, installing plugins, and
-enabling clipboard support on Linux.
+A complete setup guide for **Neovim/Vim** on Linux — covering plugin installation, theme, keybindings, and a full `.vimrc` configuration.
 
-------------------------------------------------------------------------
+---
+
+## Table of Contents
+
+1. [Installation](#1-installation)
+2. [Plugins](#2-plugins)
+3. [Appearance & Theme](#3-appearance--theme)
+4. [Keybindings](#4-keybindings)
+5. [Tab & Indentation](#5-tab--indentation)
+6. [Additional Features](#6-additional-features)
+7. [Web Development (CoC.nvim)](#7-web-development-cocnvim)
+8. [Plugin Manager Commands](#8-plugin-manager-commands)
+9. [Full Configuration](#9-full-configuration)
+10. [Setup Workflow](#10-setup-workflow)
+11. [References](#references)
+
+---
 
 ## 1. Installation
 
@@ -11,97 +26,229 @@ enabling clipboard support on Linux.
 
 `vim-plug` is a fast and minimal plugin manager for Vim/Neovim.
 
-Run the following command to install it:
-
-``` bash
+```bash
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 ```
 
-This command downloads `plug.vim` and places it inside the Vim autoload
-directory.
+### 1.2 Install System Dependencies
 
-------------------------------------------------------------------------
-
-### 1.2 Install Clipboard Dependencies
-
-To allow Vim/Neovim to interact with the **system clipboard**, install
-the following packages:
-
-``` bash
+```bash
+# Clipboard support
 sudo apt install xclip xsel
+
+# Node.js & NPM (required by CoC.nvim)
+sudo apt install nodejs npm
 ```
 
-These tools allow copying and pasting between Vim and your system
-clipboard.
+### 1.3 Install Nerd Font
 
-------------------------------------------------------------------------
+`vim-devicons` requires a Nerd Font to display icons correctly in the terminal.
 
-## 2. Plugin Installation
-
-After adding plugins to your Vim configuration file (`.vimrc` or
-`init.vim`), you need to install them.
-
-### Reload Vim Configuration
-
-Inside Vim, run:
-
-``` vim
-:source %
+```bash
+# Example: install FiraCode Nerd Font
+sudo apt install fonts-firacode
 ```
 
-This reloads the current configuration file.
+Or download manually from [nerdfonts.com](https://www.nerdfonts.com/) and set it in your terminal emulator.
 
-------------------------------------------------------------------------
+---
 
-### Install Plugins
+## 2. Plugins
 
-Then install all declared plugins using:
+All plugins are declared between `call plug#begin()` and `call plug#end()` inside `.vimrc`.
 
-``` vim
-:PlugInstall
+```vim
+call plug#begin()
+
+" --- Theme & UI ---
+Plug 'catppuccin/vim', { 'as': 'catppuccin' }        " Catppuccin color theme
+Plug 'vim-airline/vim-airline'                        " Informative status bar
+Plug 'ryanoasis/vim-devicons'                         " File icons (requires Nerd Font)
+
+" --- Navigation ---
+Plug 'preservim/nerdtree'                             " File explorer sidebar
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }  " Fuzzy file finder
+
+" --- Tools ---
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }  " Markdown live preview
+Plug 'neoclide/coc.nvim', {'branch': 'release'}       " Auto-completion engine
+Plug 'sheerun/vim-polyglot'                           " Multi-language syntax highlighting
+Plug 'jiangmiao/auto-pairs'                           " Auto close brackets & quotes
+Plug 'airblade/vim-gitgutter'                         " Git diff indicators in the gutter
+
+call plug#end()
 ```
 
-Wait until the installation process finishes.
+### Plugin List
 
-After the installation is complete, **restart Vim/Neovim** to ensure all
-plugins load correctly.
+| Plugin | Category | Description |
+|--------|----------|-------------|
+| `catppuccin/vim` | UI | Catppuccin color theme |
+| `vim-airline` | UI | Informative bottom status bar |
+| `vim-devicons` | UI | File and folder icons |
+| `preservim/nerdtree` | Navigation | Sidebar file explorer |
+| `junegunn/fzf` | Navigation | Fuzzy file search |
+| `markdown-preview.nvim` | Tools | Live Markdown preview in browser |
+| `neoclide/coc.nvim` | Tools | Auto-completion & LSP support |
+| `vim-polyglot` | Tools | Syntax highlighting for many languages |
+| `auto-pairs` | Tools | Auto close `()`, `[]`, `{}`, `""` |
+| `vim-gitgutter` | Tools | Show Git diff next to line numbers |
 
-------------------------------------------------------------------------
+---
 
-## 3. Plugin Management
+## 3. Appearance & Theme
 
-Useful commands for managing plugins:
+### Catppuccin Variants
 
-  Command          Description
-  ---------------- ---------------------------------------
-  `:PlugInstall`   Install plugins listed in your config
-  `:PlugUpdate`    Update installed plugins
-  `:PlugClean`     Remove unused plugins
-  `:PlugStatus`    Check plugin status
+| Colorscheme | Style |
+|---|---|
+| `catppuccin_latte` | Light |
+| `catppuccin_frappe` | Medium dark |
+| `catppuccin_macchiato` | Dark (currently used) |
+| `catppuccin_mocha` | Darkest |
 
-------------------------------------------------------------------------
+### Display Configuration
 
-## 4. Recommended Workflow
+```vim
+" --- Basic View ---
+syntax on            " Enable syntax highlighting
+set number           " Show line numbers
+set relativenumber   " Show relative line numbers from cursor
+set cursorline       " Highlight the active line
+set termguicolors    " Enable 24-bit RGB color
+set fillchars=eob:-  " Replace '~' at end of buffer with '-'
 
-Typical setup process:
+" --- Colors ---
+highlight LineNr        ctermfg=grey   guifg=#808080  " Line number color
+highlight CursorLineNr  ctermfg=yellow guifg=#FFFF00  " Active line number color
 
-1.  Install **vim-plug**
-2.  Configure plugins inside `.vimrc` or `init.vim`
-3.  Reload configuration using `:source %`
-4.  Install plugins using `:PlugInstall`
-5.  Restart Vim/Neovim
+" Apply theme
+colorscheme catppuccin_macchiato
+```
 
-------------------------------------------------------------------------
+---
 
-## 5. Notes
+## 4. Keybindings
 
--   Always run `:PlugInstall` after adding new plugins.
--   Restart Vim if plugins are not loaded correctly.
--   Keep your plugins updated regularly using `:PlugUpdate`.
+```vim
+" --- Shortcuts ---
 
-------------------------------------------------------------------------
+" Toggle NERDTree with Ctrl+N
+nnoremap <C-n> :NERDTreeToggle<CR>
+```
+
+### Shortcut Reference
+
+| Shortcut | Action | Description |
+|----------|--------|-------------|
+| `Ctrl + N` | `:NERDTreeToggle` | Open / close file explorer sidebar |
+| `Ctrl + P` | `:Files` | Fuzzy find files (via fzf) |
+| `Tab` | Autocomplete | Select suggestion in CoC menu |
+| `Shift + K` | Documentation | Show docs for word under cursor |
+
+---
+
+## 5. Tab & Indentation
+
+```vim
+" --- Tab & Indentation ---
+set tabstop=4    " 1 tab = 4 spaces wide
+set shiftwidth=4 " Indent width when using >> or <<
+set expandtab    " Convert tabs to spaces
+```
+
+| Setting | Value | Description |
+|---------|-------|-------------|
+| `tabstop` | `4` | 1 tab character = 4 spaces |
+| `shiftwidth` | `4` | Auto-indent width |
+| `expandtab` | enabled | Tabs are converted to spaces on input |
+
+---
+
+## 6. Additional Features
+
+```vim
+" --- Additional Features ---
+set mouse=a               " Enable mouse support in all modes
+set clipboard=unnamedplus " Use system clipboard (requires xclip/xsel)
+set ignorecase            " Case-insensitive search
+set smartcase             " Case-sensitive if query contains uppercase
+```
+
+| Setting | Description |
+|---------|-------------|
+| `mouse=a` | Mouse enabled in normal, insert, and visual mode |
+| `clipboard=unnamedplus` | Copy/paste synced with system clipboard |
+| `ignorecase` | `/foo` matches `Foo`, `FOO`, etc. |
+| `smartcase` | `/Foo` stays case-sensitive due to uppercase letter |
+
+---
+
+## 7. Web Development (CoC.nvim)
+
+### Install Language Servers
+
+Run the following inside Vim/Neovim after `:PlugInstall`:
+
+```vim
+:CocInstall coc-html coc-css coc-tsserver coc-json coc-prettier coc-emmet
+```
+
+### CoC Extensions
+
+| Extension | Description |
+|-----------|-------------|
+| `coc-html` | Auto-complete & diagnostics for HTML |
+| `coc-css` | Auto-complete for CSS / SCSS |
+| `coc-tsserver` | IntelliSense for JavaScript & TypeScript |
+| `coc-json` | JSON validation and formatting |
+| `coc-prettier` | Auto-format via `:CocCommand prettier.formatFile` |
+| `coc-emmet` | Snippet expansion, e.g. `div>ul>li*3` + `Tab` |
+
+---
+
+## 8. Plugin Manager Commands
+
+### vim-plug
+
+| Command | Description |
+|---------|-------------|
+| `:source %` | Reload the current configuration file |
+| `:PlugInstall` | Install all listed plugins |
+| `:PlugUpdate` | Update all installed plugins |
+| `:PlugClean` | Remove plugins no longer in config |
+| `:PlugStatus` | Check status of all plugins |
+
+### CoC
+
+| Command | Description |
+|---------|-------------|
+| `:CocList extensions` | View and manage installed CoC extensions |
+| `:CocInstall <name>` | Install a CoC extension |
+| `:CocUninstall <name>` | Uninstall a CoC extension |
+| `:CocCommand prettier.formatFile` | Format current file with Prettier |
+
+---
+## 10. Setup Workflow
+
+Follow these steps for a fresh setup:
+
+1. Install `vim-plug` using the `curl` command in the [Installation](#1-installation) section.
+2. Install system dependencies: `xclip`, `xsel`, `nodejs`, `npm`.
+3. Install a Nerd Font and set it in your terminal emulator.
+4. Copy the [full configuration](/vim/.vimrc) to `~/.vimrc` or `~/.config/nvim/init.vim`.
+5. Open Vim/Neovim and run `:PlugInstall`.
+6. Install CoC extensions with `:CocInstall coc-html coc-css coc-tsserver coc-json coc-prettier coc-emmet`.
+7. Restart Vim/Neovim — setup complete.
+
+---
 
 ## References
 
--   https://github.com/junegunn/vim-plug
+- [vim-plug GitHub](https://github.com/junegunn/vim-plug)
+- [NERDTree Documentation](https://github.com/preservim/nerdtree)
+- [coc.nvim Wiki](https://github.com/neoclide/coc.nvim/wiki)
+- [Catppuccin for Vim](https://github.com/catppuccin/vim)
+- [FZF GitHub](https://github.com/junegunn/fzf)
+- [Nerd Fonts](https://www.nerdfonts.com/)
