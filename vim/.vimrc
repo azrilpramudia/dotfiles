@@ -22,20 +22,20 @@ call plug#end()
 " --- Shortcut ----
 " Press CTRL+N to open/close folder explorer
 nnoremap <C-n> :NERDTreeToggle<CR>
+vmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+" --- Command ---
+"  use :Prettier for call prettier formatter
+command! -nargs=0 Prettier :CocCommand prettier.forceFormatDocument
+
 
 " --- Basic view ---
 syntax on
 set number
 set relativenumber
 set cursorline
-set notermguicolors
-
-if $TERM == 'xterm-kitty'
-  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-  set termguicolors
-endif
-
+set termguicolors
 set fillchars=eob:-
 
 " Colors
