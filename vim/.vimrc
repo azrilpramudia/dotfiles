@@ -22,6 +22,13 @@ call plug#end()
 " --- Shortcut ----
 " Press CTRL+N to open/close folder explorer
 nnoremap <C-n> :NERDTreeToggle<CR>
+" Press Ctrl + p to search for files (p = project/path)
+nnoremap <C-p> :Files<CR>
+" Press Ctrl + g to search for a word in all files (like VS Code Search)
+nnoremap <C-g> :Rg<CR>
+" Press Ctrl + b to view currently opened files (buffers)
+nnoremap <C-b> :Buffers<CR>
+
 vmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
 
