@@ -144,6 +144,8 @@ nnoremap <C-n> :NERDTreeToggle<CR>
 |----------|--------|-------------|
 | `Ctrl + N` | `:NERDTreeToggle` | Open / close file explorer sidebar |
 | `Ctrl + P` | `:Files` | Fuzzy find files (via fzf) |
+| `Ctrl + G` | `:Rg` | Fuzzy Search word (via fzf) |
+| `Ctrl + B` | `:Buffers` | Fuzzy Which Open Files |
 | `Tab` | Autocomplete | Select suggestion in CoC menu |
 | `Shift + K` | Documentation | Show docs for word under cursor |
 
