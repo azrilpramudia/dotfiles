@@ -52,8 +52,8 @@ highlight CursorLineNr ctermfg=yellow guifg=#FFFF00
 colorscheme catppuccin_macchiato
 
 " --- Tab & Indentation ---  
-set tabstop=4
-set shiftwidth=4
+set tabstop=2
+set shiftwidth=2
 set expandtab
 
 " --- Additional Feature ---  
