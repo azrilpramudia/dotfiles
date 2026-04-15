@@ -183,7 +183,7 @@ alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
 alias rspanel='xfce4-panel -r'
-alias open-img='xdg-open'
+alias open='xdg-open'
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
