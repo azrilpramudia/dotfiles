@@ -138,7 +138,7 @@ colorscheme catppuccin_macchiato
 nnoremap <C-n> :NERDTreeToggle<CR>
 ```
 
-### Shortcut Reference
+### Shortcut Reference (Keybindings)
 
 | Shortcut | Action | Description |
 |----------|--------|-------------|
@@ -148,8 +148,25 @@ nnoremap <C-n> :NERDTreeToggle<CR>
 | `Ctrl + B` | `:Buffers` | Fuzzy Which Open Files |
 | `Tab` | Autocomplete | Select suggestion in CoC menu |
 | `Shift + K` | Documentation | Show docs for word under cursor |
+| `<Leader> + f` | `coc-format-selected` | Format selected code / block |
 
 ---
+
+### File Management & Commands
+
+| Command | Action | Description |
+|---------|--------|-------------|
+| `:w` | Save | Save current file |
+| `:w filename.js` | Save As | Save as a new file name |
+| `:wa` | Save All | Save all opened buffers |
+| `:wq` | Save & Quit | Save and exit Vim |
+| `:w!` | Force Save | Force write (for read-only files) |
+| `:q!` | Force Quit | Exit without saving changes |
+| `:e filename.js` | Edit | Open/Edit a file in current window |
+| `:new filename.js` | Horizontal Split | Open new file in horizontal split |
+| `:vnew filename.js`| Vertical Split | Open new file in vertical split |
+| `:!touch file.js` | Terminal Command | Run shell command to create file |
+| `:Prettier` | Format | Run Prettier on entire document |
 
 ## 5. Tab & Indentation
 
