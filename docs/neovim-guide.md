@@ -149,6 +149,8 @@ nnoremap <C-n> :NERDTreeToggle<CR>
 | `Tab` | Autocomplete | Select suggestion in CoC menu |
 | `Shift + K` | Documentation | Show docs for word under cursor |
 | `<Leader> + f` | `coc-format-selected` | Format selected code / block |
+| `u` | **Undo** | Undo last changes |
+| `Ctrl + R` | **Redo** | Revert undone changes |
 
 ---
 
