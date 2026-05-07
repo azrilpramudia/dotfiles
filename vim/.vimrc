@@ -30,6 +30,8 @@ nnoremap <C-g> :Rg<CR>
 " Press Ctrl + b to view currently opened files (buffers)
 nnoremap <C-b> :Buffers<CR>
 
+nnoremap <Tab> :Autocomplete<CR>
+
 vmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
 
