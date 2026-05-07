@@ -30,10 +30,19 @@ nnoremap <C-g> :Rg<CR>
 " Press Ctrl + b to view currently opened files (buffers)
 nnoremap <C-b> :Buffers<CR>
 
-nnoremap <Tab> :Autocomplete<CR>
+" Use Tab Insert Mode untuk autocomplete
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#confirm() :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
 
-vmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+vmap <leader>f <Plug>(coc-format-selected)
+nmap <leader>f <Plug>(coc-format-selected)
 
 " --- Command ---
 "  use :Prettier for call prettier formatter
