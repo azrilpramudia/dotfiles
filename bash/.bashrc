@@ -195,3 +195,5 @@ pb10k hide clock
 
 # OpenClaw Completion
 source "/home/meow/.openclaw/completions/openclaw.bash"
+
+[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path bash)"
