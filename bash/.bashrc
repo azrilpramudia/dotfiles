@@ -184,6 +184,7 @@ alias mv='mv -i'
 alias rm='rm -i'
 alias rspanel='xfce4-panel -r'
 alias open='xdg-open'
+alias update-kitty="curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
