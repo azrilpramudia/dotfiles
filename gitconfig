@@ -14,7 +14,7 @@
     navigate = true    # Gunakan tombol 'n' dan 'N' untuk lompat antar file diff
     line-numbers = true
     side-by-side = false
-    syntax-theme = TwoDark
+    syntax-theme = Catppuccin Mocha
 
 [merge]
     conflictstyle = zdiff3
