@@ -1,26 +1,51 @@
 add_newline = false
 palette = "catppuccin_mocha"
 
-# Format prompt 1 baris yang ringkas
-format = "$directory$git_branch$git_status$character"
+# Format prompt dengan pendeteksi bahasa pemrograman
+format = "$directory$git_branch$git_status$golang$nodejs$bun$java$character"
 
 [character]
-success_symbol = "[❯](bold #a6e3a1) "  # Green
-error_symbol = "[❯](bold #f38ba8) "    # Red
+success_symbol = "[❯](bold #a6e3a1) "
+error_symbol = "[❯](bold #f38ba8) "
 
 [directory]
-style = "bold #89b4fa"                # Blue
-truncation_length = 3
+style = "bold #89b4fa"
+truncation_length = 2
 truncate_to_repo = false
 
 [git_branch]
 symbol = " "
-style = "bold #f5c2e7"                # Pink
+style = "bold #f5c2e7"
 
 [git_status]
-style = "bold #f9e2af"                # Yellow
+style = "bold #f9e2af"
 
-# Definisi Palette Catppuccin Mocha
+# ==========================================
+# BAHASA & RUNTIME AUTO-DETECT
+# ==========================================
+[golang]
+symbol = " "
+style = "bold #74c7ec"
+format = "via [$symbol($version )]($style)"
+
+[nodejs]
+symbol = " "
+style = "bold #a6e3a1"
+format = "via [$symbol($version )]($style)"
+
+[bun]
+symbol = "󰏗 "
+style = "bold #f5e0dc"
+format = "via [$symbol($version )]($style)"
+
+[java]
+symbol = " "
+style = "bold #fab387"
+format = "via [$symbol($version )]($style)"
+
+# ==========================================
+# PALETTE CATPPUCCIN MOCHA (WAJIB ADA)
+# ==========================================
 [palettes.catppuccin_mocha]
 rosewater = "#f5e0dc"
 flamingo = "#f2cdcd"
