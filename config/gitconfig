@@ -11,7 +11,7 @@
     diffFilter = delta --color-only
 
 [delta]
-    navigate = true    # Gunakan tombol 'n' dan 'N' untuk lompat antar file diff
+    navigate = true    
     line-numbers = true
     side-by-side = false
     syntax-theme = Catppuccin Mocha
