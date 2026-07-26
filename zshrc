@@ -1,0 +1,90 @@
+# ==========================================
+# 1. ZINIT & PLUGINS
+# ==========================================
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+if [ ! -d "$ZINIT_HOME" ]; then
+    mkdir -p "$(dirname "$ZINIT_HOME")"
+    git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+fi
+source "${ZINIT_HOME}/zinit.zsh"
+
+# Plugins
+zinit light zsh-users/zsh-syntax-highlighting
+zinit light zsh-users/zsh-autosuggestions
+zinit light zsh-users/zsh-completions
+
+# Completion System & Shell Options
+autoload -Uz compinit && compinit
+
+setopt AUTO_CD
+setopt CORRECT
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+
+# ==========================================
+# 2. PROMPT (STARSHIP)
+# ==========================================
+if command -v starship &> /dev/null; then
+    eval "$(starship init zsh)"
+fi
+
+# ==========================================
+# 3. ENVIRONMENT & PATHS
+# ==========================================
+# NVM Configuration
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# Bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Go
+export PATH=$PATH:/usr/local/go/bin
+
+# Kiro Shell Integration
+[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
+
+# ==========================================
+# 4. ALIASES & CLI TOOLS
+# ==========================================
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -i'
+alias rspanel='xfce4-panel -r'
+alias open='xdg-open'
+alias update-kitty="curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin"
+
+# Modern CLI (eza)
+if command -v eza &> /dev/null; then
+    alias ls="eza --icons --group-directories-first"
+    alias l="eza --icons --group-directories-first"
+    alias ll="eza -lh --icons --git --group-directories-first"
+    alias la="eza -lah --icons --git --group-directories-first" # Diperbaiki agar rapi
+    alias tree="eza --tree --icons"
+else
+    alias l="ls"
+    alias la="ls -la"
+fi
+
+# ==========================================
+# 5. FZF CONFIGURATION
+# ==========================================
+source /usr/share/doc/fzf/examples/key-bindings.zsh 2>/dev/null || source ~/.fzf.zsh 2>/dev/null
+
+# FZF Catppuccin Mocha Theme
+export FZF_DEFAULT_OPTS=" \
+--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
+--color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
+--color=marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 \
+--color=selected-bg:#45475a"
+
+# ==========================================
+# 6. SDKMAN (MUST BE AT THE VERY END)
+# ==========================================
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

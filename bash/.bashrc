@@ -190,11 +190,11 @@ alias update-kitty="curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /d
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
+# Go
+export PATH=$PATH:/usr/local/go/bin
+
 # Hidden
 pb10k show scm
 pb10k hide clock
-
-# OpenClaw Completion
-source "/home/meow/.openclaw/completions/openclaw.bash"
 
 [[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path bash)"
