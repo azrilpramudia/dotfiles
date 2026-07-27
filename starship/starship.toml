@@ -5,8 +5,8 @@ palette = "catppuccin_mocha"
 format = "$directory$git_branch$git_status$golang$nodejs$bun$java$character"
 
 [character]
-success_symbol = "[❯](bold #a6e3a1) "
-error_symbol = "[❯](bold #f38ba8) "
+success_symbol = "[❯](bold #a6e3a1)"
+error_symbol = "[❯](bold #f38ba8)"
 
 [directory]
 style = "bold #89b4fa"
@@ -21,7 +21,7 @@ style = "bold #f5c2e7"
 style = "bold #f9e2af"
 
 # ==========================================
-# BAHASA & RUNTIME AUTO-DETECT
+# LANGUAGE & RUNTIME AUTO-DETECT
 # ==========================================
 [golang]
 symbol = " "
@@ -44,7 +44,7 @@ style = "bold #fab387"
 format = "via [$symbol($version )]($style)"
 
 # ==========================================
-# PALETTE CATPPUCCIN MOCHA (WAJIB ADA)
+# PALETTE CATPPUCCIN MOCHA
 # ==========================================
 [palettes.catppuccin_mocha]
 rosewater = "#f5e0dc"
