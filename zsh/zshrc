@@ -71,6 +71,15 @@ else
     alias la="ls -la"
 fi
 
+# 1. Mode Extend (Masing-masing berjalan di resolusi native)
+alias display-extend='xrandr --output eDP-1 --primary --mode 1600x900 --pos 0x0 --output HDMI-1 --mode 1366x768 --right-of eDP-1'
+# 2. Mode Mirror 1280x720 (Resolusi 16:9 yang didukung KEDUA layar)
+alias display-mirror='xrandr --output eDP-1 --mode 1280x720 --output HDMI-1 --mode 1280x720 --same-as eDP-1'
+# 3. Mode Mirror dengan Scaling (Layar Laptop tetap tajam 1600x900, di-downscale otomatis ke monitor)
+alias display-mirror-scale='xrandr --output eDP-1 --mode 1600x900 --output HDMI-1 --mode 1366x768 --scale-from 1600x900 --same-as eDP-1'
+# 4. Matikan Monitor Eksternal
+alias display-off='xrandr --output HDMI-1 --off --output eDP-1 --auto'
+
 # ==========================================
 # 5. FZF CONFIGURATION
 # ==========================================
