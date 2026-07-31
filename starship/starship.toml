@@ -2,7 +2,7 @@ scan_timeout = 1000
 add_newline = false
 palette = "catppuccin_mocha"
 
-# Format prompt dengan pendeteksi bahasa pemrograman
+# detect language
 format = "$directory$git_branch$git_status$golang$nodejs$bun$java$character"
 
 [character]
