@@ -198,3 +198,5 @@ pb10k show scm
 pb10k hide clock
 
 [[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path bash)"
+
+[[ -s "/home/meow/.gvm/scripts/gvm" ]] && source "/home/meow/.gvm/scripts/gvm"

@@ -44,7 +44,7 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 # Go
-export PATH=$PATH:/usr/local/go/bin
+export PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
 export PATH=$PATH:$HOME/go/bin
 
 # Kiro Shell Integration
@@ -98,3 +98,8 @@ export FZF_DEFAULT_OPTS=" \
 # ==========================================
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+[[ -s "/home/meow/.gvm/scripts/gvm" ]] && source "/home/meow/.gvm/scripts/gvm"
+
+# opencode
+export PATH=/home/meow/.opencode/bin:$PATH

@@ -1,5 +1,5 @@
 " --- Plugin ----
-call plug#begin()
+call plug#begin("~/.vim/plugged")
 
 " Theme & UI
 Plug 'catppuccin/vim', { 'as': 'catppuccin' }
@@ -49,6 +49,10 @@ nmap <leader>f <Plug>(coc-format-selected)
 "  use :Prettier for call prettier formatter
 command! -nargs=0 Prettier :CocCommand prettier.forceFormatDocument
 
+"Autocomplete disable for go"
+let g:go_code_completion_enabled = 0
+let g:go_doc_keywordprg_enabled = 0
+let g:go_def_mapping_enabled = 0
 
 " --- Basic view ---
 syntax on
